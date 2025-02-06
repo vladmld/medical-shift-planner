@@ -60,6 +60,31 @@
   background-color: darkred;
 }
 
+.app .calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* 7 columns, equal width */
+  grid-gap: 5px; /* Spacing between cells */
+  border: 1px solid #ccc;
+}
+
+.app .day-header {
+  text-align: center;
+  padding: 5px;
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.app .calendar-day {
+  border: 1px solid #ddd;
+  padding: 5px;
+  min-height: 50px; /* Ensure cells have some height */
+  text-align: center; /* Center the day number */
+}
+
+.app .other-month {
+  color: #999; /* Gray out days from other months */
+}
+
 /* Media Query for Mobile Screens */
 @media (max-width: 768px) {
   .app {
@@ -83,5 +108,16 @@
     width: 100%; /* Make form elements full-width */
     margin: 5px 0; /* Adjust margins for vertical stacking */
     box-sizing: border-box; /* Include padding and border in the element's total width */
+  }
+
+  .app .calendar-grid {
+    grid-template-columns: repeat(
+      7,
+      1fr
+    ); /*For mobile devices, it is recommanded to use this value*/
+    grid-gap: 1px;
+  }
+  .app .calendar-day {
+    min-height: 30px;
   }
 }
