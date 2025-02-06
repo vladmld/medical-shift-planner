@@ -1,38 +1,87 @@
-.App {
+/* General Styles (for larger screens) */
+.app {
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+.app h1 {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Styles for the doctor input form */
+.app > div {
+  /* Target direct div children of .app */
+  margin-bottom: 20px; /* Add spacing between sections */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.app input[type='text'],
+.app select,
+.app button {
+  padding: 8px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.app button {
+  background-color: #4caf50; /* Green */
   color: white;
+  cursor: pointer;
 }
 
-.App-link {
-  color: #61dafb;
+.app button:hover {
+  background-color: #3e8e41;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Styles for the doctor list */
+.app ul {
+  list-style: none; /* Remove bullet points */
+  padding: 0;
+}
+
+.app li {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.app .reset-button {
+  background-color: #ff0000; /* Red */
+  color: white;
+  /* Other styles from the regular button, to avoid duplication */
+  padding: 8px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.app .reset-button:hover {
+  background-color: darkred;
+}
+
+/* Media Query for Mobile Screens */
+@media (max-width: 768px) {
+  .app {
+    padding: 10px; /* Reduce padding on smaller screens */
   }
-  to {
-    transform: rotate(360deg);
+
+  .app input[type='text'],
+  .app select,
+  .app button {
+    width: 100%; /* Make form elements full-width */
+    margin: 5px 0; /* Adjust margins for vertical stacking */
+    box-sizing: border-box; /* Include padding and border in the element's total width */
+  }
+  .app > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .app .reset-button {
+    width: 100%; /* Make form elements full-width */
+    margin: 5px 0; /* Adjust margins for vertical stacking */
+    box-sizing: border-box; /* Include padding and border in the element's total width */
   }
 }
