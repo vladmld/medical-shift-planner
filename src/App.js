@@ -4,6 +4,7 @@ import './App.css';
 import DoctorForm from './components/DoctorForm';
 import DoctorList from './components/DoctorList';
 import Calendar from './components/Calendar';
+import { generateSchedule } from './scheduleGenerator';
 
 function App() {
   const [doctors, setDoctors] = useState([]);
@@ -40,6 +41,17 @@ function App() {
     setCurrentYear(getNextMonthAndYear().year);
   };
 
+  const handleGenerateSchedule = () => {
+    const newSchedule = generateSchedule(
+      doctors,
+      currentMonth,
+      currentYear,
+      getDaysInMonth
+    );
+    console.log(newSchedule)
+    setSchedule(newSchedule);
+  };
+
   return (
     <div className='app'>
       <h1>Doctor Shift Scheduler</h1>
@@ -47,11 +59,27 @@ function App() {
         Displaying schedule for {currentMonth + 1}/{currentYear}
       </p>
 
-      <DoctorForm onAddDoctor={addDoctor} currentMonth={currentMonth} currentYear={currentYear} getDaysInMonth={getDaysInMonth}/>
-      
+      <DoctorForm
+        onAddDoctor={addDoctor}
+        currentMonth={currentMonth}
+        currentYear={currentYear}
+        getDaysInMonth={getDaysInMonth}
+      />
+
       <DoctorList doctors={doctors} />
-      <Calendar currentMonth={currentMonth} currentYear={currentYear} getDaysInMonth={getDaysInMonth}/>
-      
+
+      <div>
+        <button onClick={handleGenerateSchedule}>Generate Schedule</button>
+      </div>
+
+      <Calendar
+        currentMonth={currentMonth}
+        currentYear={currentYear}
+        getDaysInMonth={getDaysInMonth}
+        schedule={schedule}
+        doctors={doctors}
+      />
+
       <div>
         <button className='reset-button' onClick={resetAll}>
           Reset All
