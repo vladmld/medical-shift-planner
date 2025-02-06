@@ -5,81 +5,84 @@ export const generateSchedule = (
   getDaysInMonth
 ) => {
   const schedule = {};
-
+  
   // Get the number of days in the current month
   const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+  
+  // Calculate the ideal distribution of shifts
+  const targetShiftsPerDoctor = Math.floor(daysInMonth / doctors.length);
+  const extraShifts = daysInMonth % doctors.length;
+  
+  // Track assignments and rest periods for each doctor
+  const assignedShifts = {};
+  const lastWorkingDay = {};
+  
+  // Initialize tracking objects for each doctor
+  doctors.forEach(doctor => {
+    assignedShifts[doctor.name] = 0;
+    lastWorkingDay[doctor.name] = -1; // -1 indicates no previous shift
+  });
 
-  // Initialize schedule for each day of the month
+  // Initialize the schedule with empty arrays for each day
   for (let day = 1; day <= daysInMonth; day++) {
-    const dateString = `${currentYear}-${String(currentMonth + 1).padStart(
-      2,
-      '0'
-    )}-${String(day).padStart(2, '0')}`;
+    const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     schedule[dateString] = [];
   }
 
-  // Calculate target shifts per doctor for even distribution
-  const targetShiftsPerDoctor = Math.floor(daysInMonth / doctors.length);
-  const extraShifts = daysInMonth % doctors.length;
-
-  // Keep track of assignments and last working days
-  const assignedShifts = {};
-  const lastWorkingDay = {};
-  doctors.forEach((doctor) => {
-    assignedShifts[doctor.name] = 0;
-    lastWorkingDay[doctor.name] = -1;
-  });
-
-  // For each day in the month
+  // Assign shifts for each day of the month
   for (let day = 1; day <= daysInMonth; day++) {
-    const dateString = `${currentYear}-${String(currentMonth + 1).padStart(
-      2,
-      '0'
-    )}-${String(day).padStart(2, '0')}`;
-
-    // Get eligible doctors who haven't worked the previous day
-    let eligibleDoctors = doctors.filter((doctor) => {
-      return lastWorkingDay[doctor.name] !== day - 1;
+    const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    
+    // Find doctors who are eligible to work today:
+    // 1. Must not have worked yesterday (consecutive day restriction)
+    // 2. Must not have any conflicting unavailable days
+    let eligibleDoctors = doctors.filter(doctor => {
+      const hasWorkedYesterday = lastWorkingDay[doctor.name] === day - 1;
+      const isUnavailable = doctor.unavailableDays && 
+                           doctor.unavailableDays.includes(dateString);
+      
+      return !hasWorkedYesterday && !isUnavailable;
     });
 
-    // Among eligible doctors, prioritize those with fewer shifts
+    // Sort eligible doctors by their current workload and assignment limits
     eligibleDoctors.sort((a, b) => {
-      // Calculate max allowed shifts for each doctor
-      const maxShiftsA =
-        targetShiftsPerDoctor + (extraShifts > doctors.indexOf(a) ? 1 : 0);
-      const maxShiftsB =
-        targetShiftsPerDoctor + (extraShifts > doctors.indexOf(b) ? 1 : 0);
-
-      // If one doctor has reached their limit but the other hasn't, prioritize the one who hasn't
-      if (
-        assignedShifts[a.name] >= maxShiftsA &&
-        assignedShifts[b.name] < maxShiftsB
-      )
-        return 1;
-      if (
-        assignedShifts[b.name] >= maxShiftsB &&
-        assignedShifts[a.name] < maxShiftsA
-      )
-        return -1;
-
-      // Otherwise, prioritize the doctor with fewer shifts
+      // Calculate maximum allowed shifts for each doctor
+      const maxShiftsA = targetShiftsPerDoctor + (extraShifts > doctors.indexOf(a) ? 1 : 0);
+      const maxShiftsB = targetShiftsPerDoctor + (extraShifts > doctors.indexOf(b) ? 1 : 0);
+      
+      // Check if either doctor has reached their shift limit
+      const aReachedLimit = assignedShifts[a.name] >= maxShiftsA;
+      const bReachedLimit = assignedShifts[b.name] >= maxShiftsB;
+      
+      if (aReachedLimit && !bReachedLimit) return 1;
+      if (!aReachedLimit && bReachedLimit) return -1;
+      
+      // If neither has reached their limit (or both have),
+      // prioritize the doctor with fewer shifts
       return assignedShifts[a.name] - assignedShifts[b.name];
     });
 
-    // Select the most eligible doctor
+    // Assign the most eligible doctor to this day
     const selectedDoctor = eligibleDoctors[0];
-
+    
     if (selectedDoctor) {
+      // Add the assignment to the schedule
       schedule[dateString].push({
-        doctor: selectedDoctor,
-        shiftType: 'full-time',
+        doctor: selectedDoctor
       });
-
-      // Update tracking
+      
+      // Update tracking information
       lastWorkingDay[selectedDoctor.name] = day;
       assignedShifts[selectedDoctor.name]++;
+    } else {
+      // If no eligible doctors are found, we might want to implement
+      // a fallback strategy or raise an alert
+      console.warn(`No eligible doctor found for ${dateString}`);
     }
   }
 
+  // For debugging and verification, log the final distribution
+  console.log('Final shift distribution:', assignedShifts);
+  
   return schedule;
 };
