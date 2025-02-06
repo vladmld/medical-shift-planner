@@ -75,14 +75,16 @@ export const generateSchedule = (
       lastWorkingDay[selectedDoctor.name] = day;
       assignedShifts[selectedDoctor.name]++;
     } else {
-      // If no eligible doctors are found, we might want to implement
-      // a fallback strategy or raise an alert
       console.warn(`No eligible doctor found for ${dateString}`);
     }
   }
 
-  // For debugging and verification, log the final distribution
-  console.log('Final shift distribution:', assignedShifts);
+    // Log the shift distribution *after* assigning all shifts
+    const shiftDistribution = {};
+    doctors.forEach(doctor => {
+        shiftDistribution[doctor.name] = assignedShifts[doctor.name];
+    });
+    console.log('Shift distribution:', shiftDistribution);
 
   return schedule;
 };

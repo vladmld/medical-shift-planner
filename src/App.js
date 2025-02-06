@@ -26,6 +26,7 @@ function App() {
   const [currentMonth, setCurrentMonth] = useState(getNextMonthAndYear().month);
   const [currentYear, setCurrentYear] = useState(getNextMonthAndYear().year);
   const [schedule, setSchedule] = useState({});
+  const [shiftDistributionMessage, setShiftDistributionMessage] = useState('');
 
   const getDaysInMonth = (month, year) => {
     return new Date(year, month + 1, 0).getDate();
@@ -40,6 +41,7 @@ function App() {
     setSchedule({});
     setCurrentMonth(getNextMonthAndYear().month);
     setCurrentYear(getNextMonthAndYear().year);
+    setShiftDistributionMessage(''); // Clear the message on reset
   };
 
   const handleGenerateSchedule = () => {
@@ -49,6 +51,32 @@ function App() {
       currentYear,
       getDaysInMonth
     );
+
+    // Calculate shift distribution directly from the schedule
+    const shiftDistribution = {};
+    doctors.forEach(doctor => {
+        shiftDistribution[doctor.name] = 0; //Init
+    })
+
+    for (const date in newSchedule) {
+      if (newSchedule.hasOwnProperty(date)) {
+        newSchedule[date].forEach(assignment => {
+          if (assignment.doctor && assignment.doctor.name) {
+            shiftDistribution[assignment.doctor.name]++;
+          }
+        });
+      }
+    }
+
+    // Format the shift distribution for display
+    let message = "Shift distribution:\n";
+    for (const doctorName in shiftDistribution) {
+      if (shiftDistribution.hasOwnProperty(doctorName)) {
+        message += `${doctorName}: ${shiftDistribution[doctorName]}\n`;
+      }
+    }
+    setShiftDistributionMessage(message);
+
     setSchedule(newSchedule);
   };
 
@@ -71,6 +99,12 @@ function App() {
       <div>
         <button onClick={handleGenerateSchedule}>Generate Schedule</button>
       </div>
+
+      {shiftDistributionMessage && (
+        <div className="shift-distribution">
+          <pre>{shiftDistributionMessage}</pre>
+        </div>
+      )}
 
       <Calendar
         currentMonth={currentMonth}
