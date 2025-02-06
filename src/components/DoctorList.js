@@ -7,8 +7,10 @@ function DoctorList({ doctors }) {
       <ul>
         {doctors.map((doctor, index) => (
           <li key={index}>
-            {doctor.name} ({doctor.type}) - Unavailable:{' '}
-            {doctor.unavailableDays.join(', ')}
+            {doctor.name} ({doctor.type})
+            {doctor.unavailableDays.length > 0 && (
+              <> - Unavailable: {doctor.unavailableDays.join(', ')}</>
+            )}
           </li>
         ))}
       </ul>

@@ -11,19 +11,20 @@ function DoctorForm({
     type: 'full-time',
     unavailableDays: [],
   });
+
   const [inputValue, setInputValue] = useState('');
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
     if (name === 'unavailableDays') {
-      setInputValue(value); // Keep the input value for display
+      setInputValue(value);
 
       if (!value.trim()) {
         setNewDoctor({ ...newDoctor, unavailableDays: [] });
         return;
       }
 
-      // Split, clean and validate days
       const daysArray = value
         .split(',')
         .map((day) => day.trim())
@@ -37,12 +38,10 @@ function DoctorForm({
             dayNum <= daysInMonth
           );
         })
-        .map((day) => parseInt(day, 10)); // Convert to numbers
+        .map((day) => parseInt(day, 10));
 
-      // Remove duplicates
       const uniqueDays = [...new Set(daysArray)];
 
-      // Sort days for better display
       uniqueDays.sort((a, b) => a - b);
 
       setNewDoctor({ ...newDoctor, unavailableDays: uniqueDays });
@@ -52,13 +51,14 @@ function DoctorForm({
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
     if (newDoctor.name.trim() === '') {
       alert('Please enter a doctor name.');
       return;
     }
     onAddDoctor(newDoctor);
     setNewDoctor({ name: '', type: 'full-time', unavailableDays: [] });
+    setInputValue('');
   };
 
   return (

@@ -7,8 +7,7 @@ import Calendar from './components/Calendar';
 import { generateSchedule } from './scheduleGenerator';
 
 function App() {
-  const [doctors, setDoctors] = useState([]);
-
+  
   const getNextMonthAndYear = () => {
     const now = new Date();
     let nextMonth = now.getMonth() + 1;
@@ -19,9 +18,11 @@ function App() {
       nextMonth = 0; // January
       nextYear += 1; // Increment the year
     }
+
     return { month: nextMonth, year: nextYear };
   };
 
+  const [doctors, setDoctors] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(getNextMonthAndYear().month);
   const [currentYear, setCurrentYear] = useState(getNextMonthAndYear().year);
   const [schedule, setSchedule] = useState({});
