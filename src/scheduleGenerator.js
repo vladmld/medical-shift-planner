@@ -4,12 +4,14 @@ export const generateSchedule = (
   currentYear,
   getDaysInMonth
 ) => {
+
   const daysInMonth = getDaysInMonth(currentMonth, currentYear);
   const schedule = {};
 
   const fullTimeDoctors = doctors.filter(
     (doctor) => doctor.type === 'full-time'
   );
+
   const partTimeDoctors = doctors.filter(
     (doctor) => doctor.type === 'part-time'
   );
@@ -17,70 +19,73 @@ export const generateSchedule = (
   let fullTimeIndex = 0;
   let partTimeIndex = 0;
 
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dateString = `${currentYear}-${String(currentMonth + 1).padStart(
+  const formatDate = (day) => {
+    return `${currentYear}-${String(currentMonth + 1).padStart(
       2,
       '0'
     )}-${String(day).padStart(2, '0')}`;
+  };
 
-    const isDayUnavailable = doctors.some((doctor) =>
-      doctor.unavailableDays.includes(day.toString())
-    );
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateString = formatDate(day);
+    schedule[dateString] = [];
 
-    if (isDayUnavailable) {
-      schedule[dateString] = null; // Keep this for days with NO available doctors
-      continue;
-    }
-
-    schedule[dateString] = []; // Initialize as an array to hold multiple doctors
-
-    // Assign Part-Time Doctor (if available)
-    if (partTimeDoctors.length > 0) {
-      let partTimeDoctor =
-        partTimeDoctors[partTimeIndex % partTimeDoctors.length];
+    // Function to find an available doctor
+    const findAvailableDoctor = (doctors, doctorIndex) => {
       let attempts = 0;
-      while (
-        partTimeDoctor.unavailableDays.includes(day.toString()) &&
-        attempts < partTimeDoctors.length
-      ) {
-        partTimeIndex = partTimeIndex + 1;
-        partTimeDoctor =
-          partTimeDoctors[partTimeIndex % partTimeDoctors.length];
-        attempts++;
-      }
-      if (!partTimeDoctor.unavailableDays.includes(day.toString())) {
-        schedule[dateString].push({
-          doctor: partTimeDoctor,
-          shiftType: 'part-time',
-        });
-        partTimeIndex = partTimeIndex + 1;
-      }
-    }
-    // Assign Full-Time Doctor (if available, and always if a part-time doctor is scheduled)
+      let currentDoctor = doctors[doctorIndex % doctors.length];
+      let initialIndex = doctorIndex;
 
+      do {
+        if (!currentDoctor.unavailableDays.includes(day)) {
+          return {
+            doctor: currentDoctor,
+            newIndex: (doctorIndex + 1) % doctors.length,
+          }; // Return the new index
+        }
+        doctorIndex++;
+        currentDoctor = doctors[doctorIndex % doctors.length];
+        attempts++;
+      } while (
+        attempts < doctors.length &&
+        initialIndex !== doctorIndex % doctors.length
+      );
+
+      return { doctor: null, newIndex: doctorIndex }; // No doctor found
+    };
+
+    // 1. Assign Full-Time Doctor (if available)
     if (fullTimeDoctors.length > 0) {
-      let fullTimeDoctor =
-        fullTimeDoctors[fullTimeIndex % fullTimeDoctors.length];
-      let attempts = 0;
-      while (
-        fullTimeDoctor.unavailableDays.includes(day.toString()) &&
-        attempts < fullTimeDoctors.length
-      ) {
-        fullTimeIndex = fullTimeIndex + 1;
-        fullTimeDoctor =
-          fullTimeDoctors[fullTimeIndex % fullTimeDoctors.length];
-        attempts++;
-      }
-
-      if (!fullTimeDoctor.unavailableDays.includes(day.toString())) {
+      const { doctor: fullTimeDoctor, newIndex } = findAvailableDoctor(
+        fullTimeDoctors,
+        fullTimeIndex
+      );
+      fullTimeIndex = newIndex;
+      if (fullTimeDoctor) {
         schedule[dateString].push({
           doctor: fullTimeDoctor,
           shiftType: 'full-time',
         });
-        fullTimeIndex = fullTimeIndex + 1;
       }
     }
-    //check if there isn't any doctor available
+
+    // 2. Assign Part-Time Doctor (if available)
+    if (partTimeDoctors.length > 0) {
+      const { doctor: partTimeDoctor, newIndex } = findAvailableDoctor(
+        partTimeDoctors,
+        partTimeIndex
+      );
+      partTimeIndex = newIndex;
+
+      if (partTimeDoctor) {
+        schedule[dateString].push({
+          doctor: partTimeDoctor,
+          shiftType: 'part-time',
+        });
+      }
+    }
+
+    // 3. If no doctors are available, set to null
     if (schedule[dateString].length === 0) {
       schedule[dateString] = null;
     }

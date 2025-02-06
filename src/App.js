@@ -49,7 +49,6 @@ function App() {
       currentYear,
       getDaysInMonth
     );
-    console.log(newSchedule)
     setSchedule(newSchedule);
   };
 
