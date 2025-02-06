@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/medical-shift-planner/static/css/main.8b68f216.css",
-    "main.js": "/medical-shift-planner/static/js/main.a80fc68a.js",
+    "main.css": "/medical-shift-planner/static/css/main.082deb19.css",
+    "main.js": "/medical-shift-planner/static/js/main.802bcecc.js",
     "static/js/488.ab8e40c7.chunk.js": "/medical-shift-planner/static/js/488.ab8e40c7.chunk.js",
     "static/media/logo.svg": "/medical-shift-planner/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/medical-shift-planner/index.html",
-    "main.8b68f216.css.map": "/medical-shift-planner/static/css/main.8b68f216.css.map",
-    "main.a80fc68a.js.map": "/medical-shift-planner/static/js/main.a80fc68a.js.map",
+    "main.082deb19.css.map": "/medical-shift-planner/static/css/main.082deb19.css.map",
+    "main.802bcecc.js.map": "/medical-shift-planner/static/js/main.802bcecc.js.map",
     "488.ab8e40c7.chunk.js.map": "/medical-shift-planner/static/js/488.ab8e40c7.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.8b68f216.css",
-    "static/js/main.a80fc68a.js"
+    "static/css/main.082deb19.css",
+    "static/js/main.802bcecc.js"
   ]
 }
