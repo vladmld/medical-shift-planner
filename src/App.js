@@ -47,7 +47,8 @@ function App() {
         Displaying schedule for {currentMonth + 1}/{currentYear}
       </p>
 
-      <DoctorForm onAddDoctor={addDoctor} />
+      <DoctorForm onAddDoctor={addDoctor} currentMonth={currentMonth} currentYear={currentYear} getDaysInMonth={getDaysInMonth}/>
+      
       <DoctorList doctors={doctors} />
       <Calendar currentMonth={currentMonth} currentYear={currentYear} getDaysInMonth={getDaysInMonth}/>
       
